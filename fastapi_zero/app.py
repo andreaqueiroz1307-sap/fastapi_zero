@@ -1,14 +1,17 @@
+from http import HTTPStatus
+
 from fastapi import FastAPI
 
 from fastapi_zero.database import Base, SessionLocal, engine
 from fastapi_zero.models.task import Task
+from fastapi_zero.schemas import Message
 
-app = FastAPI()
+app = FastAPI(title="Disciplina Desenvolvimento WEB")
 
 Base.metadata.create_all(bind=engine)
 
 
-@app.get("/")
+@app.get("/", status_code=HTTPStatus.OK, response_model=Message)
 def root():
     return {"message": "API funcionando"}
 
