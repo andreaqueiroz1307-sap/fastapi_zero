@@ -1,0 +1,17 @@
+# IDE
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+
+# venv
+.venv/
+venv/
+
+# coverage
+.coverage
+htmlcov/
+
+# banco
+*.db
