@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr
 
@@ -40,11 +40,13 @@ class TaskSchema(TaskBase):
     class Config:
         from_attributes = True
 
+
 class TaskPublic(TaskBase):
     concluida: bool
 
 
 # USER
+
 
 class UserPublic(BaseModel):
     nome: str
@@ -56,10 +58,8 @@ class UserCreate(UserPublic):
 
 
 class UserSchema(UserSimple):
-    #lista de tarefas: nome, descrição, prioridade e concluída
+    # lista de tarefas: nome, descrição, prioridade e concluída
     tarefas: List[TaskUpdate] = []
 
     class Config:
         from_attributes = True
-
-

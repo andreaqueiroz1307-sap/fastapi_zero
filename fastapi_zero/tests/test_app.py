@@ -24,18 +24,43 @@ def test_criar_user(client):
 
 
 def test_listar_users(client):
+
+    client.post(
+        "/users",
+        json={
+            "nome": "Andrea",
+            "email": "teste@teste.com",
+            "senha": "1234##",
+        },
+    )
+
     response = client.get("/users")
+
     assert response.status_code == HTTPStatus.OK
+    assert len(response.json()) == 1
 
 
 def test_criar_task(client):
+
+    # cria usuário primeiro
+    client.post(
+        "/users",
+        json={
+            "nome": "Andrea",
+            "email": "teste@teste.com",
+            "senha": "1234##",
+        },
+    )
+
+    user_id = client.get("/users").json()[0]["id"]
+
     response = client.post(
         "/tarefas",
         json={
             "titulo": "Estudar API",
             "descricao": "Fazer a API em python",
             "prioridade": "alta",
-            "user_id": 1,
+            "user_id": user_id,
         },
     )
 
@@ -49,23 +74,49 @@ def test_criar_task(client):
 
 
 def test_listar_tarefas(client):
-    response = client.get("/tarefas")
-    assert response.status_code == HTTPStatus.OK
 
-
-def test_atualizar_user(client):
-
-    response = client.post(
+    client.post(
         "/users",
         json={
             "nome": "Andrea",
-            "email": "teeste@teste.com",
+            "email": "teste@teste.com",
             "senha": "1234##",
         },
     )
 
+    user_id = client.get("/users").json()[0]["id"]
+
+    client.post(
+        "/tarefas",
+        json={
+            "titulo": "Estudar API",
+            "descricao": "Fazer a API em python",
+            "prioridade": "alta",
+            "user_id": user_id,
+        },
+    )
+
+    response = client.get("/tarefas")
+
+    assert response.status_code == HTTPStatus.OK
+    assert len(response.json()) == 1
+
+
+def test_atualizar_user(client):
+
+    client.post(
+        "/users",
+        json={
+            "nome": "Andrea",
+            "email": "teste@teste.com",
+            "senha": "1234##",
+        },
+    )
+
+    user_id = client.get("/users").json()[0]["id"]
+
     response = client.put(
-        "/users/1",
+        f"/users/{user_id}",
         json={
             "nome": "Andrea Queiroz",
             "email": "aandrea@teste.com",
