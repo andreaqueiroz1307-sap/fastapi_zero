@@ -1,65 +1,68 @@
-from datetime import datetime
-from typing import List, Optional
+from datetime import date, datetime
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr
 
 
 class Message(BaseModel):
     message: str
 
 
-# TASK
-class TaskBase(BaseModel):
-    titulo: str
-    descricao: Optional[str] = None
-    prioridade: str
-
-
-class TaskCreate(TaskBase):
-    user_id: int
-
-
-class TaskUpdate(TaskBase):
-    concluida: Optional[bool] = None
-
-
-class UserSimple(BaseModel):
-    id: int
-    nome: str
-
-    class Config:
-        from_attributes = True
-
-
-class TaskSchema(TaskBase):
-    id: int
-    concluida: bool
-    criada_em: datetime
-    usuario: Optional[UserSimple] = None
-
-    class Config:
-        from_attributes = True
-
-
-class TaskPublic(TaskBase):
-    concluida: bool
-
-
-# USER
-
-
-class UserPublic(BaseModel):
+class UserBase(BaseModel):
     nome: str
     email: EmailStr
 
 
-class UserCreate(UserPublic):
+class UserCreate(UserBase):
     senha: str
 
 
-class UserSchema(UserSimple):
-    # lista de tarefas: nome, descrição, prioridade e concluída
-    tarefas: List[TaskUpdate] = []
+class LoginRequest(BaseModel):
+    email: EmailStr
+    senha: str
 
-    class Config:
-        from_attributes = True
+
+class AlterarSenhaRequest(BaseModel):
+    senha_atual: str
+    nova_senha: str
+
+
+class UserPublic(UserBase):
+    id: int
+    model_config = ConfigDict(from_attributes=True)
+
+
+class UserSchema(UserBase):
+    id: int
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TaskCreate(BaseModel):
+    titulo: str
+    descricao: str
+    prioridade: str
+    data_limite: date | None = None
+    user_id: int
+
+
+class TaskUpdate(BaseModel):
+    titulo: str | None = None
+    descricao: str | None = None
+    prioridade: str | None = None
+    concluida: bool | None = None
+    data_limite: date | None = None
+
+
+class TaskPublic(BaseModel):
+    id: int
+    titulo: str
+    descricao: str
+    prioridade: str
+    concluida: bool
+    criada_em: datetime
+    data_limite: date | None = None
+    usuario: UserPublic
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TaskSchema(TaskPublic):
+    pass
