@@ -1,7 +1,9 @@
 from http import HTTPStatus
 
 from fastapi import Depends, FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.cors import (
+    CORSMiddleware,  # para permitir que o front acesse a API
+)
 from sqlalchemy.orm import Session
 
 from fastapi_zero.commands.user_commands import (
@@ -23,22 +25,24 @@ from fastapi_zero.schemas import (
     UserPublic,
     UserSchema,
 )
+
+# padrão Strategy para tratar as prioridades de tarefas
 from fastapi_zero.strategy.prioridade import get_prioridade_strategy
 
 app = FastAPI(title="Disciplina Desenvolvimento WEB")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=["*"],  # qualquer origem
+    allow_credentials=True,  # envio de credenciais
+    allow_methods=["*"],  # qualquer metodo
+    allow_headers=["*"],  # qualquer header
 )
-
+# cria as tabelas dos models no banco
 Base.metadata.create_all(bind=engine)
 
 
-def get_db():
+def get_db():  # abre sessão, rota usa a sessão e depois fecha
     db = SessionLocal()
     try:
         yield db
@@ -114,8 +118,10 @@ def criar_user(user: UserCreate, db: Session = Depends(get_db)):
             status_code=HTTPStatus.CONFLICT,
             detail="Já existe um usuário com esse email",
         )
-
-    command = CriarUserCommand(db, user.model_dump())
+        # logica de criação à uma classe separada
+    command = CriarUserCommand(
+        db, user.model_dump()
+    )  # pydantic em dicionário python
     novo_user = command.execute()
 
     return novo_user
@@ -202,7 +208,7 @@ def deletar_user(user_id: int, db: Session = Depends(get_db)):
 def criar_tarefa(task: TaskCreate, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == task.user_id).first()
 
-    if not user:
+    if not user:  # para criar uma tarefa é necessário existir user
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND,
             detail="Usuário não encontrado",
@@ -216,7 +222,7 @@ def criar_tarefa(task: TaskCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(nova_tarefa)
 
-    print(mensagem_prioridade)
+    print(mensagem_prioridade)  # não vai para o front, util para debug
 
     return nova_tarefa
 
@@ -242,7 +248,7 @@ def buscar_tarefa(task_id: int, db: Session = Depends(get_db)):
 @app.put("/tarefas/{task_id}", response_model=TaskSchema)
 def atualizar_tarefa(
     task_id: int,
-    task: TaskUpdate,
+    task: TaskUpdate,  # schema de campos opcionais/editar só alguns campos
     db: Session = Depends(get_db),
 ):
     tarefa = db.query(Task).filter(Task.id == task_id).first()
@@ -253,7 +259,9 @@ def atualizar_tarefa(
             detail="Tarefa não encontrada",
         )
 
-    dados = task.model_dump(exclude_unset=True)
+    dados = task.model_dump(
+        exclude_unset=True
+    )  # só vai considerar o campo que foi enviado na alteração
 
     for key, value in dados.items():
         setattr(tarefa, key, value)

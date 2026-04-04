@@ -3,209 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>FazAí App</title>
-  <style>
-    :root {
-      --azul: #2b7de9;
-      --verde: #2ecc71;
-      --cinza-fundo: #f5f9fc;
-      --branco: #ffffff;
-      --texto: #1f2937;
-      --borda: #d1d5db;
-      --erro: #dc2626;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: var(--cinza-fundo);
-      color: var(--texto);
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    header {
-      background: var(--azul);
-      color: white;
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: relative;
-    }
-
-    .container {
-      padding: 20px;
-      max-width: 900px;
-      margin: auto;
-    }
-
-    .card {
-      background: var(--branco);
-      border-radius: 10px;
-      padding: 20px;
-      margin-top: 20px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    }
-
-    input,
-    select,
-    button {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 6px;
-      border: 1px solid var(--borda);
-      font-size: 16px;
-    }
-
-    button {
-      background: var(--azul);
-      color: white;
-      border: none;
-      cursor: pointer;
-      transition: opacity 0.2s ease;
-    }
-
-    button:hover {
-      opacity: 0.92;
-    }
-
-    .link-text {
-      color: var(--azul);
-      cursor: pointer;
-      margin-top: 12px;
-      display: inline-block;
-    }
-
-    .task {
-      background: white;
-      padding: 15px;
-      border-radius: 8px;
-      margin-top: 12px;
-      border-left: 6px solid var(--azul);
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-    }
-
-    .task h3 {
-      margin: 0 0 8px 0;
-    }
-
-    .task p {
-      margin: 6px 0;
-    }
-
-    .prioridade {
-      display: inline-block;
-      margin-top: 8px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 13px;
-      background: #e5e7eb;
-    }
-
-    .fab {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: var(--verde);
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 34px;
-      color: white;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
-    }
-
-    .msg-erro {
-      color: var(--erro);
-      margin-top: 8px;
-      font-size: 14px;
-    }
-
-    .msg-sucesso {
-      color: #15803d;
-      margin-top: 8px;
-      font-size: 14px;
-    }
-
-    .empty-state {
-      margin-top: 20px;
-      padding: 20px;
-      background: white;
-      border-radius: 8px;
-      text-align: center;
-      color: #6b7280;
-    }
-
-    .user-menu-wrapper {
-      position: relative;
-    }
-
-    .user-menu-trigger {
-      cursor: pointer;
-      font-weight: bold;
-      padding: 8px 12px;
-      border-radius: 8px;
-      user-select: none;
-    }
-
-    .user-menu-trigger:hover {
-      background: rgba(255, 255, 255, 0.12);
-    }
-
-    .user-menu {
-      position: absolute;
-      top: 42px;
-      right: 0;
-      width: 220px;
-      background: white;
-      color: var(--texto);
-      border-radius: 10px;
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
-      overflow: hidden;
-      z-index: 1000;
-    }
-
-    .user-menu.hidden {
-      display: none;
-    }
-
-    .user-menu button {
-      width: 100%;
-      margin: 0;
-      border: none;
-      border-radius: 0;
-      background: white;
-      color: var(--texto);
-      text-align: left;
-      padding: 12px 14px;
-      cursor: pointer;
-    }
-
-    .user-menu button:hover {
-      background: #f3f4f6;
-      opacity: 1;
-    }
-
-    .field-label {
-      display: block;
-      margin-top: 10px;
-      margin-bottom: 4px;
-      font-size: 14px;
-      color: #374151;
-      font-weight: 600;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
@@ -216,7 +14,7 @@
         <h2>Login</h2>
         <input id="loginEmail" type="email" placeholder="Email" />
         <input id="loginSenha" type="password" placeholder="Senha" />
-        <button id="btnLogin">Entrar</button>
+        <button onclick="login()">Entrar</button>
         <div id="loginErro" class="msg-erro"></div>
         <p class="link-text" onclick="mostrarCadastro()">Criar conta</p>
       </div>
@@ -231,7 +29,7 @@
         <input id="cadNome" type="text" placeholder="Nome" />
         <input id="cadEmail" type="email" placeholder="Email" />
         <input id="cadSenha" type="password" placeholder="Senha" />
-        <button id="btnCadastro">Cadastrar</button>
+        <button onclick="cadastrar()">Cadastrar</button>
         <div id="cadastroErro" class="msg-erro"></div>
         <p class="link-text" onclick="mostrarLogin()">Voltar</p>
       </div>
@@ -247,9 +45,9 @@
         <div id="userMenuTrigger" class="user-menu-trigger"></div>
 
         <div id="userMenu" class="user-menu hidden">
-          <button id="btnAtualizarMenu">Atualizar tarefas</button>
-          <button id="btnAlterarSenhaMenu">Alterar senha</button>
-          <button id="btnLogoutMenu">Sair</button>
+          <button onclick="clicarAtualizarTarefas()">Atualizar tarefas</button>
+          <button onclick="mostrarTelaAlterarSenha()">Alterar senha</button>
+          <button onclick="logout()">Sair</button>
         </div>
       </div>
     </header>
@@ -267,8 +65,8 @@
       <div class="card">
         <h2>Nova Tarefa</h2>
 
-        <input id="titulo" type="text" placeholder="Título" />
-        <input id="descricao" type="text" placeholder="Descrição" />
+        <input id="titulo" placeholder="Título" />
+        <textarea id="descricao" placeholder="Descrição"></textarea>
 
         <select id="prioridade">
           <option value="baixa">Baixa</option>
@@ -279,10 +77,36 @@
         <label for="dataLimite" class="field-label">Data limite</label>
         <input id="dataLimite" type="date" />
 
-        <button id="btnCriarTarefa">Salvar</button>
-        <button type="button" onclick="voltarHome()">Voltar</button>
+        <button onclick="criarTarefa()">Salvar</button>
+        <button onclick="voltarHome()">Voltar</button>
 
         <div id="tarefaErro" class="msg-erro"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDITAR TAREFA -->
+  <div id="editarTarefa" class="hidden">
+    <div class="container">
+      <div class="card">
+        <h2>Editar Tarefa</h2>
+
+        <input id="editTitulo" placeholder="Título" />
+        <textarea id="editDescricao" placeholder="Descrição"></textarea>
+
+        <select id="editPrioridade">
+          <option value="baixa">Baixa</option>
+          <option value="media">Média</option>
+          <option value="alta">Alta</option>
+        </select>
+
+        <label for="editDataLimite" class="field-label">Data limite</label>
+        <input id="editDataLimite" type="date" />
+
+        <button onclick="salvarEdicaoTarefa()">Salvar</button>
+        <button onclick="voltarHomeDeEditar()">Voltar</button>
+
+        <div id="erroEdicao" class="msg-erro"></div>
       </div>
     </div>
   </div>
@@ -293,28 +117,16 @@
       <div class="card">
         <h2>Alterar senha</h2>
 
-        <input
-          id="senhaAtual"
-          type="password"
-          placeholder="Senha atual"
-        />
-
-        <input
-          id="novaSenha"
-          type="password"
-          placeholder="Nova senha"
-        />
-
+        <input id="senhaAtual" type="password" placeholder="Senha atual" />
+        <input id="novaSenha" type="password" placeholder="Nova senha" />
         <input
           id="confirmarNovaSenha"
           type="password"
           placeholder="Confirmar nova senha"
         />
 
-        <button id="btnSalvarNovaSenha">Salvar nova senha</button>
-        <button type="button" onclick="voltarHomeDeAlterarSenha()">
-          Voltar
-        </button>
+        <button onclick="salvarNovaSenha()">Salvar nova senha</button>
+        <button onclick="voltarHomeDeAlterarSenha()">Voltar</button>
 
         <div id="alterarSenhaErro" class="msg-erro"></div>
         <div id="alterarSenhaSucesso" class="msg-sucesso"></div>
@@ -322,402 +134,6 @@
     </div>
   </div>
 
-  <script>
-    class ApiClient {
-      constructor() {
-        if (ApiClient.instance) return ApiClient.instance;
-        this.baseURL = 'http://127.0.0.1:8000';
-        ApiClient.instance = this;
-      }
-
-      async request(url, options = {}) {
-        const response = await fetch(this.baseURL + url, options);
-
-        let data = null;
-        try {
-          data = await response.json();
-        } catch {
-          data = null;
-        }
-
-        if (!response.ok) {
-          throw new Error(data?.detail || 'Erro na requisição');
-        }
-
-        return data;
-      }
-
-      get(url) {
-        return this.request(url);
-      }
-
-      post(url, body) {
-        return this.request(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(body)
-        });
-      }
-
-      put(url, body) {
-        return this.request(url, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(body)
-        });
-      }
-    }
-
-    const api = new ApiClient();
-
-    const ApiFacade = {
-      login: (dados) => api.post('/login', dados),
-      criarUser: (dados) => api.post('/users', dados),
-      listarTasks: () => api.get('/tarefas'),
-      criarTask: (dados) => api.post('/tarefas', dados),
-      alterarSenha: (userId, dados) =>
-        api.put(`/users/${userId}/alterar-senha`, dados)
-    };
-
-    let userAtual = null;
-
-    const el = {
-      loginEmail: document.getElementById('loginEmail'),
-      loginSenha: document.getElementById('loginSenha'),
-      cadNome: document.getElementById('cadNome'),
-      cadEmail: document.getElementById('cadEmail'),
-      cadSenha: document.getElementById('cadSenha'),
-      titulo: document.getElementById('titulo'),
-      descricao: document.getElementById('descricao'),
-      prioridade: document.getElementById('prioridade'),
-      dataLimite: document.getElementById('dataLimite'),
-      senhaAtual: document.getElementById('senhaAtual'),
-      novaSenha: document.getElementById('novaSenha'),
-      confirmarNovaSenha: document.getElementById('confirmarNovaSenha'),
-      tarefas: document.getElementById('tarefas'),
-      loginErro: document.getElementById('loginErro'),
-      cadastroErro: document.getElementById('cadastroErro'),
-      tarefaErro: document.getElementById('tarefaErro'),
-      alterarSenhaErro: document.getElementById('alterarSenhaErro'),
-      alterarSenhaSucesso: document.getElementById('alterarSenhaSucesso'),
-      btnLogin: document.getElementById('btnLogin'),
-      btnCadastro: document.getElementById('btnCadastro'),
-      btnCriarTarefa: document.getElementById('btnCriarTarefa'),
-      btnSalvarNovaSenha: document.getElementById('btnSalvarNovaSenha'),
-      userMenuTrigger: document.getElementById('userMenuTrigger'),
-      userMenu: document.getElementById('userMenu'),
-      btnAtualizarMenu: document.getElementById('btnAtualizarMenu'),
-      btnAlterarSenhaMenu: document.getElementById('btnAlterarSenhaMenu'),
-      btnLogoutMenu: document.getElementById('btnLogoutMenu')
-    };
-
-    function limparMensagens() {
-      el.loginErro.textContent = '';
-      el.cadastroErro.textContent = '';
-      el.tarefaErro.textContent = '';
-      el.alterarSenhaErro.textContent = '';
-      el.alterarSenhaSucesso.textContent = '';
-    }
-
-    function limparCamposAlterarSenha() {
-      el.senhaAtual.value = '';
-      el.novaSenha.value = '';
-      el.confirmarNovaSenha.value = '';
-    }
-
-    function limparCamposTarefa() {
-      el.titulo.value = '';
-      el.descricao.value = '';
-      el.prioridade.value = 'baixa';
-      el.dataLimite.value = '';
-    }
-
-    function esconderMenuUsuario() {
-      el.userMenu.classList.add('hidden');
-    }
-
-    function alternarMenuUsuario() {
-      el.userMenu.classList.toggle('hidden');
-    }
-
-    function mostrarCadastro() {
-      limparMensagens();
-      esconderMenuUsuario();
-      document.getElementById('login').classList.add('hidden');
-      document.getElementById('cadastro').classList.remove('hidden');
-    }
-
-    function mostrarLogin() {
-      limparMensagens();
-      esconderMenuUsuario();
-
-      document.getElementById('cadastro').classList.add('hidden');
-      document.getElementById('home').classList.add('hidden');
-      document.getElementById('criarTarefa').classList.add('hidden');
-      document.getElementById('alterarSenha').classList.add('hidden');
-      document.getElementById('login').classList.remove('hidden');
-    }
-
-    function mostrarHome() {
-      limparMensagens();
-      esconderMenuUsuario();
-
-      document.getElementById('login').classList.add('hidden');
-      document.getElementById('cadastro').classList.add('hidden');
-      document.getElementById('criarTarefa').classList.add('hidden');
-      document.getElementById('alterarSenha').classList.add('hidden');
-      document.getElementById('home').classList.remove('hidden');
-    }
-
-    function mostrarCriarTarefa() {
-      limparMensagens();
-      esconderMenuUsuario();
-
-      document.getElementById('home').classList.add('hidden');
-      document.getElementById('criarTarefa').classList.remove('hidden');
-    }
-
-    function voltarHome() {
-      limparMensagens();
-      esconderMenuUsuario();
-
-      document.getElementById('criarTarefa').classList.add('hidden');
-      document.getElementById('home').classList.remove('hidden');
-      listarTarefas();
-    }
-
-    function mostrarTelaAlterarSenha() {
-      limparMensagens();
-      limparCamposAlterarSenha();
-      esconderMenuUsuario();
-
-      document.getElementById('home').classList.add('hidden');
-      document.getElementById('alterarSenha').classList.remove('hidden');
-    }
-
-    function voltarHomeDeAlterarSenha() {
-      limparMensagens();
-      limparCamposAlterarSenha();
-      esconderMenuUsuario();
-
-      document.getElementById('alterarSenha').classList.add('hidden');
-      document.getElementById('home').classList.remove('hidden');
-    }
-
-    async function login() {
-      limparMensagens();
-
-      const email = el.loginEmail.value.trim();
-      const senha = el.loginSenha.value.trim();
-
-      if (!email || !senha) {
-        el.loginErro.textContent = 'Preencha email e senha.';
-        return;
-      }
-
-      try {
-        const usuario = await ApiFacade.login({ email, senha });
-
-        userAtual = usuario;
-        el.userMenuTrigger.textContent = usuario.nome;
-
-        el.loginEmail.value = '';
-        el.loginSenha.value = '';
-
-        mostrarHome();
-        await listarTarefas();
-      } catch (error) {
-        el.loginErro.textContent = error.message;
-      }
-    }
-
-    async function cadastrar() {
-      limparMensagens();
-
-      const nome = el.cadNome.value.trim();
-      const email = el.cadEmail.value.trim();
-      const senha = el.cadSenha.value.trim();
-
-      if (!nome || !email || !senha) {
-        el.cadastroErro.textContent = 'Preencha todos os campos.';
-        return;
-      }
-
-      try {
-        await ApiFacade.criarUser({ nome, email, senha });
-
-        alert('Usuário criado com sucesso.');
-
-        el.cadNome.value = '';
-        el.cadEmail.value = '';
-        el.cadSenha.value = '';
-
-        mostrarLogin();
-      } catch (error) {
-        el.cadastroErro.textContent = error.message;
-      }
-    }
-
-    async function listarTarefas() {
-      limparMensagens();
-
-      if (!userAtual) {
-        return;
-      }
-
-      try {
-        const tarefas = await ApiFacade.listarTasks();
-        el.tarefas.innerHTML = '';
-
-        const tarefasDoUsuario = tarefas.filter((tarefa) => {
-          const idUsuarioDaTarefa = tarefa.user_id ?? tarefa.usuario?.id;
-          return Number(idUsuarioDaTarefa) === Number(userAtual.id);
-        });
-
-        if (tarefasDoUsuario.length === 0) {
-          el.tarefas.innerHTML = `
-            <div class="empty-state">
-              Nenhuma tarefa encontrada para este usuário.
-            </div>
-          `;
-          return;
-        }
-
-        tarefasDoUsuario.forEach((tarefa) => {
-          const div = document.createElement('div');
-          div.className = 'task';
-
-          div.innerHTML = `
-            <h3>${tarefa.titulo}</h3>
-            <p>${tarefa.descricao}</p>
-            <span class="prioridade">Prioridade: ${tarefa.prioridade}</span>
-            <p><strong>Prazo:</strong> ${
-              tarefa.data_limite ? tarefa.data_limite : 'Não informado'
-            }</p>
-          `;
-
-          el.tarefas.appendChild(div);
-        });
-      } catch (error) {
-        el.tarefas.innerHTML = `
-          <div class="empty-state">
-            Erro ao carregar tarefas: ${error.message}
-          </div>
-        `;
-      }
-    }
-
-    async function criarTarefa() {
-      limparMensagens();
-
-      const titulo = el.titulo.value.trim();
-      const descricao = el.descricao.value.trim();
-      const prioridade = el.prioridade.value;
-      const dataLimite = el.dataLimite.value || null;
-
-      if (!titulo || !descricao) {
-        el.tarefaErro.textContent = 'Preencha título e descrição.';
-        return;
-      }
-
-      if (!userAtual) {
-        el.tarefaErro.textContent = 'Faça login novamente.';
-        return;
-      }
-
-      try {
-        await ApiFacade.criarTask({
-          titulo,
-          descricao,
-          prioridade,
-          data_limite: dataLimite,
-          user_id: userAtual.id
-        });
-
-        limparCamposTarefa();
-        voltarHome();
-      } catch (error) {
-        el.tarefaErro.textContent = error.message;
-      }
-    }
-
-    async function salvarNovaSenha() {
-      limparMensagens();
-
-      if (!userAtual) {
-        el.alterarSenhaErro.textContent = 'Faça login novamente.';
-        return;
-      }
-
-      const senhaAtual = el.senhaAtual.value.trim();
-      const novaSenha = el.novaSenha.value.trim();
-      const confirmarNovaSenha = el.confirmarNovaSenha.value.trim();
-
-      if (!senhaAtual || !novaSenha || !confirmarNovaSenha) {
-        el.alterarSenhaErro.textContent = 'Preencha todos os campos.';
-        return;
-      }
-
-      if (novaSenha !== confirmarNovaSenha) {
-        el.alterarSenhaErro.textContent =
-          'A confirmação da nova senha não confere.';
-        return;
-      }
-
-      try {
-        const resposta = await ApiFacade.alterarSenha(userAtual.id, {
-          senha_atual: senhaAtual,
-          nova_senha: novaSenha
-        });
-
-        el.alterarSenhaSucesso.textContent = resposta.message;
-        limparCamposAlterarSenha();
-      } catch (error) {
-        el.alterarSenhaErro.textContent = error.message;
-      }
-    }
-
-    function logout() {
-      userAtual = null;
-      el.userMenuTrigger.textContent = '';
-      el.tarefas.innerHTML = '';
-      limparCamposAlterarSenha();
-      limparCamposTarefa();
-      esconderMenuUsuario();
-      mostrarLogin();
-    }
-
-    el.btnLogin.addEventListener('click', login);
-    el.btnCadastro.addEventListener('click', cadastrar);
-    el.btnCriarTarefa.addEventListener('click', criarTarefa);
-    el.btnSalvarNovaSenha.addEventListener('click', salvarNovaSenha);
-
-    el.userMenuTrigger.addEventListener('click', (event) => {
-      event.stopPropagation();
-      alternarMenuUsuario();
-    });
-
-    el.btnAtualizarMenu.addEventListener('click', async () => {
-      esconderMenuUsuario();
-      await listarTarefas();
-    });
-
-    el.btnAlterarSenhaMenu.addEventListener('click', mostrarTelaAlterarSenha);
-    el.btnLogoutMenu.addEventListener('click', logout);
-
-    document.addEventListener('click', (event) => {
-      const clicouDentroDoMenu =
-        el.userMenu.contains(event.target) ||
-        el.userMenuTrigger.contains(event.target);
-
-      if (!clicouDentroDoMenu) {
-        esconderMenuUsuario();
-      }
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
