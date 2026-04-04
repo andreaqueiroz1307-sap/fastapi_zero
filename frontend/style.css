@@ -85,6 +85,18 @@ button:hover {
   display: inline-block;
 }
 
+.links-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.links-row .link-text {
+  margin-top: 0;
+}
+
 .task {
   background: white;
   padding: 15px;

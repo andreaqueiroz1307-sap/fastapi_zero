@@ -31,6 +31,8 @@ function limparMensagens() {
   document.getElementById('erroEdicao').innerText = '';
   document.getElementById('alterarSenhaErro').innerText = '';
   document.getElementById('alterarSenhaSucesso').innerText = '';
+  document.getElementById('esqueciSenhaErro').innerText = '';
+  document.getElementById('esqueciSenhaSucesso').innerText = '';
 }
 
 function limparCamposCriacao() {
@@ -51,6 +53,12 @@ function limparCamposSenha() {
   document.getElementById('senhaAtual').value = '';
   document.getElementById('novaSenha').value = '';
   document.getElementById('confirmarNovaSenha').value = '';
+}
+
+function limparCamposEsqueciSenha() {
+  document.getElementById('esqueciEmail').value = '';
+  document.getElementById('esqueciNovaSenha').value = '';
+  document.getElementById('esqueciConfirmarSenha').value = '';
 }
 
 function esconderMenuUsuario() {
@@ -109,6 +117,42 @@ async function cadastrar() {
     mostrarLogin();
   } catch (e) {
     document.getElementById('cadastroErro').innerText = e.message;
+  }
+}
+
+async function redefinirSenha() {
+  limparMensagens();
+
+  try {
+    const email = document.getElementById('esqueciEmail').value.trim();
+    const novaSenha = document.getElementById('esqueciNovaSenha').value.trim();
+    const confirmarSenha = document
+      .getElementById('esqueciConfirmarSenha')
+      .value.trim();
+
+    if (!email || !novaSenha || !confirmarSenha) {
+      document.getElementById('esqueciSenhaErro').innerText =
+        'Preencha todos os campos.';
+      return;
+    }
+
+    if (novaSenha !== confirmarSenha) {
+      document.getElementById('esqueciSenhaErro').innerText =
+        'A confirmação da nova senha não confere.';
+      return;
+    }
+
+    const resposta = await api('/users/redefinir-senha', 'PUT', {
+      email: email,
+      nova_senha: novaSenha
+    });
+
+    document.getElementById('esqueciSenhaSucesso').innerText =
+      resposta.message || 'Senha redefinida com sucesso.';
+
+    limparCamposEsqueciSenha();
+  } catch (e) {
+    document.getElementById('esqueciSenhaErro').innerText = e.message;
   }
 }
 
@@ -244,6 +288,20 @@ function mostrarCadastro() {
   toggle('login', 'cadastro');
 }
 
+function mostrarEsqueciSenha() {
+  limparMensagens();
+  esconderMenuUsuario();
+  limparCamposEsqueciSenha();
+
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('cadastro').classList.add('hidden');
+  document.getElementById('home').classList.add('hidden');
+  document.getElementById('criarTarefa').classList.add('hidden');
+  document.getElementById('editarTarefa').classList.add('hidden');
+  document.getElementById('alterarSenha').classList.add('hidden');
+  document.getElementById('esqueciSenha').classList.remove('hidden');
+}
+
 function mostrarLogin() {
   limparMensagens();
   esconderMenuUsuario();
@@ -253,6 +311,7 @@ function mostrarLogin() {
   document.getElementById('criarTarefa').classList.add('hidden');
   document.getElementById('editarTarefa').classList.add('hidden');
   document.getElementById('alterarSenha').classList.add('hidden');
+  document.getElementById('esqueciSenha').classList.add('hidden');
   document.getElementById('login').classList.remove('hidden');
 }
 
@@ -293,11 +352,6 @@ function voltarHomeDeAlterarSenha() {
   toggle('alterarSenha', 'home');
 }
 
-function clicarAtualizarTarefas() {
-  esconderMenuUsuario();
-  listarTarefas();
-}
-
 function logout() {
   userAtual = null;
   tarefaEditando = null;
@@ -308,6 +362,7 @@ function logout() {
   limparCamposCriacao();
   limparCamposEdicao();
   limparCamposSenha();
+  limparCamposEsqueciSenha();
   esconderMenuUsuario();
   mostrarLogin();
 }
@@ -337,3 +392,49 @@ document
     event.stopPropagation();
     alternarMenuUsuario();
   });
+
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'Enter') return;
+
+  const loginVisivel = !document.getElementById('login').classList.contains('hidden');
+  const cadastroVisivel = !document.getElementById('cadastro').classList.contains('hidden');
+  const alterarSenhaVisivel = !document.getElementById('alterarSenha').classList.contains('hidden');
+  const esqueciSenhaVisivel = !document.getElementById('esqueciSenha').classList.contains('hidden');
+
+  if (loginVisivel) {
+    login();
+    return;
+  }
+
+  if (cadastroVisivel) {
+    const nome = document.getElementById('cadNome').value.trim();
+    const email = document.getElementById('cadEmail').value.trim();
+    const senha = document.getElementById('cadSenha').value.trim();
+
+    if (nome && email && senha) {
+      cadastrar();
+    }
+    return;
+  }
+
+  if (alterarSenhaVisivel) {
+    const senhaAtual = document.getElementById('senhaAtual').value.trim();
+    const novaSenha = document.getElementById('novaSenha').value.trim();
+    const confirmar = document.getElementById('confirmarNovaSenha').value.trim();
+
+    if (senhaAtual && novaSenha && confirmar) {
+      salvarNovaSenha();
+    }
+    return;
+  }
+
+  if (esqueciSenhaVisivel) {
+    const email = document.getElementById('esqueciEmail').value.trim();
+    const novaSenha = document.getElementById('esqueciNovaSenha').value.trim();
+    const confirmar = document.getElementById('esqueciConfirmarSenha').value.trim();
+
+    if (email && novaSenha && confirmar) {
+      redefinirSenha();
+    }
+  }
+});

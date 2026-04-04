@@ -17,6 +17,7 @@ from fastapi_zero.schemas import (
     AlterarSenhaRequest,
     LoginRequest,
     Message,
+    RedefinirSenhaSchema,
     TaskCreate,
     TaskPublic,
     TaskSchema,
@@ -106,6 +107,23 @@ def alterar_senha(
     db.refresh(user)
 
     return {"message": "Senha alterada com sucesso"}
+
+
+@app.put("/users/redefinir-senha", status_code=HTTPStatus.OK)
+def redefinir_senha(
+    dados: RedefinirSenhaSchema, db: Session = Depends(get_db)
+):
+    user = db.query(User).filter(User.email == dados.email).first()
+
+    if not user:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND, detail="Usuário não encontrado."
+        )
+
+    user.senha = dados.nova_senha
+    db.commit()
+
+    return {"message": "Senha redefinida com sucesso."}
 
 
 # ----------------------- USERS ---------------------------

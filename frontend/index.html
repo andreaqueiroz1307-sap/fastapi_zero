@@ -16,7 +16,10 @@
         <input id="loginSenha" type="password" placeholder="Senha" />
         <button onclick="login()">Entrar</button>
         <div id="loginErro" class="msg-erro"></div>
-        <p class="link-text" onclick="mostrarCadastro()">Criar conta</p>
+          <div class="links-row">
+            <p class="link-text" onclick="mostrarCadastro()">Criar conta</p>
+            <p class="link-text" onclick="mostrarEsqueciSenha()">Esqueci a senha</p>
+          </div>
       </div>
     </div>
   </div>
@@ -36,6 +39,33 @@
     </div>
   </div>
 
+  <!-- ESQUECI A SENHA -->
+  <div id="esqueciSenha" class="hidden">
+    <div class="container">
+      <div class="card">
+        <h2>Redefinir senha</h2>
+
+        <input id="esqueciEmail" type="email" placeholder="Email cadastrado" />
+        <input
+          id="esqueciNovaSenha"
+          type="password"
+          placeholder="Nova senha"
+        />
+        <input
+          id="esqueciConfirmarSenha"
+          type="password"
+          placeholder="Confirmar nova senha"
+        />
+
+        <button onclick="redefinirSenha()">Salvar nova senha</button>
+        <button onclick="mostrarLogin()">Voltar</button>
+
+        <div id="esqueciSenhaErro" class="msg-erro"></div>
+        <div id="esqueciSenhaSucesso" class="msg-sucesso"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- HOME -->
   <div id="home" class="hidden">
     <header>
@@ -45,7 +75,6 @@
         <div id="userMenuTrigger" class="user-menu-trigger"></div>
 
         <div id="userMenu" class="user-menu hidden">
-          <button onclick="clicarAtualizarTarefas()">Atualizar tarefas</button>
           <button onclick="mostrarTelaAlterarSenha()">Alterar senha</button>
           <button onclick="logout()">Sair</button>
         </div>

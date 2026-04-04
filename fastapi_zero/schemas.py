@@ -26,6 +26,11 @@ class AlterarSenhaRequest(BaseModel):
     nova_senha: str
 
 
+class RedefinirSenhaSchema(BaseModel):
+    email: EmailStr
+    nova_senha: str
+
+
 class UserPublic(UserBase):
     id: int
     model_config = ConfigDict(from_attributes=True)
