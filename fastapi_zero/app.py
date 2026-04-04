@@ -1,9 +1,7 @@
 from http import HTTPStatus
 
 from fastapi import Depends, FastAPI, HTTPException
-from fastapi.middleware.cors import (
-    CORSMiddleware,  # para permitir que o front acesse a API
-)
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from fastapi_zero.commands.user_commands import (
@@ -26,24 +24,22 @@ from fastapi_zero.schemas import (
     UserPublic,
     UserSchema,
 )
-
-# padrão Strategy para tratar as prioridades de tarefas
 from fastapi_zero.strategy.prioridade import get_prioridade_strategy
 
 app = FastAPI(title="Disciplina Desenvolvimento WEB")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # qualquer origem
-    allow_credentials=True,  # envio de credenciais
-    allow_methods=["*"],  # qualquer metodo
-    allow_headers=["*"],  # qualquer header
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
-# cria as tabelas dos models no banco
+
 Base.metadata.create_all(bind=engine)
 
 
-def get_db():  # abre sessão, rota usa a sessão e depois fecha
+def get_db():
     db = SessionLocal()
     try:
         yield db
@@ -51,13 +47,11 @@ def get_db():  # abre sessão, rota usa a sessão e depois fecha
         db.close()
 
 
-# ----------------------- ROOT ----------------------------
 @app.get("/", status_code=HTTPStatus.OK, response_model=Message)
 def root():
     return {"message": "API funcionando"}
 
 
-# ----------------------- LOGIN ---------------------------
 @app.post("/login", response_model=UserPublic, status_code=HTTPStatus.OK)
 def login(data: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == data.email).first()
@@ -71,7 +65,6 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
     return user
 
 
-# ------------------- ALTERAR SENHA -----------------------
 @app.put(
     "/users/{user_id}/alterar-senha",
     response_model=Message,
@@ -109,24 +102,36 @@ def alterar_senha(
     return {"message": "Senha alterada com sucesso"}
 
 
-@app.put("/users/redefinir-senha", status_code=HTTPStatus.OK)
+@app.put(
+    "/users/redefinir-senha",
+    response_model=Message,
+    status_code=HTTPStatus.OK,
+)
 def redefinir_senha(
-    dados: RedefinirSenhaSchema, db: Session = Depends(get_db)
+    dados: RedefinirSenhaSchema,
+    db: Session = Depends(get_db),
 ):
     user = db.query(User).filter(User.email == dados.email).first()
 
     if not user:
         raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail="Usuário não encontrado."
+            status_code=HTTPStatus.NOT_FOUND,
+            detail="Usuário não encontrado.",
+        )
+
+    if user.senha == dados.nova_senha:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail="A nova senha deve ser diferente da senha atual.",
         )
 
     user.senha = dados.nova_senha
     db.commit()
+    db.refresh(user)
 
     return {"message": "Senha redefinida com sucesso."}
 
 
-# ----------------------- USERS ---------------------------
 @app.post("/users", response_model=UserPublic, status_code=HTTPStatus.CREATED)
 def criar_user(user: UserCreate, db: Session = Depends(get_db)):
     email_existente = db.query(User).filter(User.email == user.email).first()
@@ -136,10 +141,8 @@ def criar_user(user: UserCreate, db: Session = Depends(get_db)):
             status_code=HTTPStatus.CONFLICT,
             detail="Já existe um usuário com esse email",
         )
-        # logica de criação à uma classe separada
-    command = CriarUserCommand(
-        db, user.model_dump()
-    )  # pydantic em dicionário python
+
+    command = CriarUserCommand(db, user.model_dump())
     novo_user = command.execute()
 
     return novo_user
@@ -178,8 +181,7 @@ def atualizar_user(
         )
 
     email_em_uso = (
-        db
-        .query(User)
+        db.query(User)
         .filter(User.email == user.email, User.id != user_id)
         .first()
     )
@@ -217,7 +219,6 @@ def deletar_user(user_id: int, db: Session = Depends(get_db)):
     return user
 
 
-# ----------------------- TASKS ---------------------------
 @app.post(
     "/tarefas",
     response_model=TaskPublic,
@@ -226,7 +227,7 @@ def deletar_user(user_id: int, db: Session = Depends(get_db)):
 def criar_tarefa(task: TaskCreate, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == task.user_id).first()
 
-    if not user:  # para criar uma tarefa é necessário existir user
+    if not user:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND,
             detail="Usuário não encontrado",
@@ -240,7 +241,7 @@ def criar_tarefa(task: TaskCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(nova_tarefa)
 
-    print(mensagem_prioridade)  # não vai para o front, util para debug
+    print(mensagem_prioridade)
 
     return nova_tarefa
 
@@ -266,7 +267,7 @@ def buscar_tarefa(task_id: int, db: Session = Depends(get_db)):
 @app.put("/tarefas/{task_id}", response_model=TaskSchema)
 def atualizar_tarefa(
     task_id: int,
-    task: TaskUpdate,  # schema de campos opcionais/editar só alguns campos
+    task: TaskUpdate,
     db: Session = Depends(get_db),
 ):
     tarefa = db.query(Task).filter(Task.id == task_id).first()
@@ -277,9 +278,7 @@ def atualizar_tarefa(
             detail="Tarefa não encontrada",
         )
 
-    dados = task.model_dump(
-        exclude_unset=True
-    )  # só vai considerar o campo que foi enviado na alteração
+    dados = task.model_dump(exclude_unset=True)
 
     for key, value in dados.items():
         setattr(tarefa, key, value)
@@ -287,3 +286,29 @@ def atualizar_tarefa(
     db.commit()
     db.refresh(tarefa)
     return tarefa
+
+
+
+@app.delete(
+    "/tarefas/{task_id}",
+    response_model=TaskSchema,
+    status_code=HTTPStatus.OK,
+)
+@app.delete(
+    "/tarefas/{task_id}",
+    response_model=Message,
+    status_code=HTTPStatus.OK,
+)
+def deletar_tarefa(task_id: int, db: Session = Depends(get_db)):
+    tarefa = db.query(Task).filter(Task.id == task_id).first()
+
+    if not tarefa:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND,
+            detail="Tarefa não encontrada",
+        )
+
+    db.delete(tarefa)
+    db.commit()
+
+    return {"message": "Tarefa deletada com sucesso"}

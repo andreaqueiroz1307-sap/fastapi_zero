@@ -143,7 +143,7 @@ async function redefinirSenha() {
     }
 
     const resposta = await api('/users/redefinir-senha', 'PUT', {
-      email: email,
+      email,
       nova_senha: novaSenha
     });
 
@@ -176,18 +176,129 @@ async function listarTarefas() {
 
     tarefasDoUsuario.forEach((t) => {
       const div = document.createElement('div');
-      div.className = 'task';
+      div.className = `task ${t.concluida ? 'concluida' : ''}`;
 
       div.innerHTML = `
-        <h3>${t.titulo}</h3>
-        <p>${t.descricao}</p>
-        <span class="prioridade">Prioridade: ${t.prioridade}</span>
-        <p><strong>Prazo:</strong> ${t.data_limite || '---'}</p>
+        <div class="task-main">
+          <div class="task-header">
+            <input
+              type="checkbox"
+              class="task-checkbox"
+              ${t.concluida ? 'checked' : ''}
+            />
+            <div class="task-content">
+              <h3>${t.titulo}</h3>
+              <p>${t.descricao}</p>
+              <span class="prioridade">Prioridade: ${t.prioridade}</span>
+              <p><strong>Prazo:</strong> ${t.data_limite || '---'}</p>
+            </div>
+          </div>
+
+          ${
+            t.concluida
+              ? `
+                <button
+                  class="task-delete"
+                  title="Excluir tarefa"
+                  aria-label="Excluir tarefa"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m-7 0h8"
+                    />
+                  </svg>
+                </button>
+              `
+              : ''
+          }
+        </div>
       `;
 
-      div.addEventListener('click', () => abrirEdicao(t));
+      const checkbox = div.querySelector('.task-checkbox');
+      const botaoDelete = div.querySelector('.task-delete');
+
+      checkbox.addEventListener('click', async (event) => {
+        event.stopPropagation();
+        await alternarConclusaoTarefa(t, checkbox.checked);
+      });
+
+      if (botaoDelete) {
+        botaoDelete.addEventListener('click', async (event) => {
+          event.stopPropagation();
+          await deletarTarefa(t.id);
+        });
+      }
+
+      div.addEventListener('click', (event) => {
+        if (
+          event.target.classList.contains('task-checkbox') ||
+          event.target.closest('.task-delete')
+        ) {
+          return;
+        }
+
+        abrirEdicao(t);
+      });
+
       tarefasDiv.appendChild(div);
     });
+  } catch (e) {
+    alert(e.message);
+  }
+}
+
+async function deletarTarefa(taskId) {
+  const confirmar = window.confirm(
+    'Tem certeza que deseja excluir esta tarefa?'
+  );
+
+  if (!confirmar) {
+    return;
+  }
+
+  try {
+    await api(`/tarefas/${taskId}`, 'DELETE');
+
+    if (tarefaEditando && tarefaEditando.id === taskId) {
+      tarefaEditando = null;
+    }
+
+    await listarTarefas();
+  } catch (e) {
+    if (e.message === 'Tarefa não encontrada') {
+      await listarTarefas();
+      return;
+    }
+
+    alert(e.message);
+  }
+}
+
+async function alternarConclusaoTarefa(tarefa, concluida) {
+  try {
+    const tarefaAtualizada = await api(`/tarefas/${tarefa.id}`, 'PUT', {
+      titulo: tarefa.titulo,
+      descricao: tarefa.descricao,
+      prioridade: tarefa.prioridade,
+      data_limite: tarefa.data_limite || null,
+      concluida
+    });
+
+    tarefa.concluida = concluida;
+
+    if (tarefaEditando && tarefaEditando.id === tarefa.id) {
+      tarefaEditando = tarefaAtualizada;
+    }
+
+    await listarTarefas();
   } catch (e) {
     alert(e.message);
   }
@@ -215,7 +326,8 @@ async function salvarEdicaoTarefa() {
       titulo: document.getElementById('editTitulo').value.trim(),
       descricao: document.getElementById('editDescricao').value.trim(),
       prioridade: document.getElementById('editPrioridade').value,
-      data_limite: document.getElementById('editDataLimite').value || null
+      data_limite: document.getElementById('editDataLimite').value || null,
+      concluida: tarefaEditando.concluida ?? false
     });
 
     voltarHomeDeEditar();
@@ -249,8 +361,9 @@ async function salvarNovaSenha() {
   try {
     const senhaAtual = document.getElementById('senhaAtual').value.trim();
     const novaSenha = document.getElementById('novaSenha').value.trim();
-    const confirmarNovaSenha =
-      document.getElementById('confirmarNovaSenha').value.trim();
+    const confirmarNovaSenha = document
+      .getElementById('confirmarNovaSenha')
+      .value.trim();
 
     if (!senhaAtual || !novaSenha || !confirmarNovaSenha) {
       document.getElementById('alterarSenhaErro').innerText =
@@ -396,10 +509,14 @@ document
 document.addEventListener('keydown', (event) => {
   if (event.key !== 'Enter') return;
 
-  const loginVisivel = !document.getElementById('login').classList.contains('hidden');
-  const cadastroVisivel = !document.getElementById('cadastro').classList.contains('hidden');
-  const alterarSenhaVisivel = !document.getElementById('alterarSenha').classList.contains('hidden');
-  const esqueciSenhaVisivel = !document.getElementById('esqueciSenha').classList.contains('hidden');
+  const loginVisivel =
+    !document.getElementById('login').classList.contains('hidden');
+  const cadastroVisivel =
+    !document.getElementById('cadastro').classList.contains('hidden');
+  const alterarSenhaVisivel =
+    !document.getElementById('alterarSenha').classList.contains('hidden');
+  const esqueciSenhaVisivel =
+    !document.getElementById('esqueciSenha').classList.contains('hidden');
 
   if (loginVisivel) {
     login();
@@ -431,7 +548,9 @@ document.addEventListener('keydown', (event) => {
   if (esqueciSenhaVisivel) {
     const email = document.getElementById('esqueciEmail').value.trim();
     const novaSenha = document.getElementById('esqueciNovaSenha').value.trim();
-    const confirmar = document.getElementById('esqueciConfirmarSenha').value.trim();
+    const confirmar = document
+      .getElementById('esqueciConfirmarSenha')
+      .value.trim();
 
     if (email && novaSenha && confirmar) {
       redefinirSenha();

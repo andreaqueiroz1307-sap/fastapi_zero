@@ -45,6 +45,7 @@ class TaskCreate(BaseModel):
     titulo: str
     descricao: str
     prioridade: str
+    concluida: bool = False
     data_limite: date | None = None
     user_id: int
 
