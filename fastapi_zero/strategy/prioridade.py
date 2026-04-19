@@ -1,35 +1,29 @@
-from typing import override
-
-
 class PrioridadeStrategy:
     def executar(self):
         raise NotImplementedError()
 
 
 class PrioridadeAlta(PrioridadeStrategy):
-    @override
     def executar(self):
-        return "Alta prioridade - executar imediatamente"
+        return 'Alta prioridade - executar imediatamente'
 
 
 class PrioridadeMedia(PrioridadeStrategy):
-    @override
     def executar(self):
-        return "Prioridade média - planejar execução"
+        return 'Prioridade média - planejar execução'
 
 
 class PrioridadeBaixa(PrioridadeStrategy):
-    @override
     def executar(self):
-        return "Baixa prioridade - pode aguardar"
+        return 'Baixa prioridade - pode aguardar'
 
 
 def get_prioridade_strategy(prioridade: str) -> PrioridadeStrategy:
-    if prioridade == "alta":
+    if prioridade == 'alta':
         return PrioridadeAlta()
-    elif prioridade == "media":
+    if prioridade == 'media':
         return PrioridadeMedia()
-    elif prioridade == "baixa":
+    if prioridade == 'baixa':
         return PrioridadeBaixa()
-    else:
-        raise ValueError("Prioridade inválida")
+
+    raise ValueError('Prioridade inválida')

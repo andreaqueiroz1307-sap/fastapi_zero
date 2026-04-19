@@ -1,3 +1,5 @@
+from fastapi_zero.auth import hash_senha
+from fastapi_zero.models.category import Category
 from fastapi_zero.models.user import User
 
 
@@ -12,10 +14,22 @@ class CriarUserCommand(Command):
         self.user_data = user_data
 
     def execute(self):
-        user = User(**self.user_data)
+        dados = self.user_data.copy()
+        dados['senha'] = hash_senha(dados['senha'])
+
+        user = User(**dados)
         self.db.add(user)
         self.db.commit()
         self.db.refresh(user)
+
+        categoria_padrao = Category(
+            nome='TODAS',
+            user_id=user.id,
+        )
+        self.db.add(categoria_padrao)
+        self.db.commit()
+        self.db.refresh(user)
+
         return user
 
 
@@ -26,7 +40,12 @@ class AtualizarUserCommand(Command):
         self.user_data = user_data
 
     def execute(self):
-        for key, value in self.user_data.items():
+        dados = self.user_data.copy()
+
+        if 'senha' in dados:
+            dados['senha'] = hash_senha(dados['senha'])
+
+        for key, value in dados.items():
             setattr(self.db_user, key, value)
 
         self.db.commit()
