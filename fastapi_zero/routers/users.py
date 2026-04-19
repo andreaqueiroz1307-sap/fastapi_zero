@@ -44,7 +44,10 @@ def criar_user(user: UserCreate, db: Session = Depends(get_db)):
             detail='Já existe um usuário com esse email',
         )
 
-    command = CriarUserCommand(db, user.model_dump())
+    dados = user.model_dump()
+    dados['senha'] = hash_senha(dados['senha'])
+
+    command = CriarUserCommand(db, dados)
     novo_user = command.execute()
     return novo_user
 
@@ -93,6 +96,7 @@ def atualizar_user(
         )
 
     dados = user.model_dump(exclude_unset=True)
+    dados['senha'] = hash_senha(dados['senha'])
 
     command = AtualizarUserCommand(db, db_user, dados)
     user_atualizado = command.execute()
