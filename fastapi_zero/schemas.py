@@ -72,7 +72,6 @@ class TaskCreate(BaseModel):
     titulo: str
     descricao: str
     prioridade: PrioridadeEnum
-    concluida: bool = False
     data_limite: date | None = None
     frequencia_lembrete: FrequenciaLembreteEnum | None = None
     user_id: int

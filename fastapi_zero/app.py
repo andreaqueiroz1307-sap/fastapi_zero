@@ -10,7 +10,7 @@ from fastapi_zero.routers.tasks import router as tasks_router
 from fastapi_zero.routers.users import router as users_router
 from fastapi_zero.schemas import Message
 
-app = FastAPI(title='Disciplina Desenvolvimento WEB')
+app = FastAPI(title='FazAi App - Solução Inteligente para sua rotina')
 
 app.add_middleware(
     CORSMiddleware,
