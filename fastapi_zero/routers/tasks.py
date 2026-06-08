@@ -76,7 +76,6 @@ def criar_tarefa(task: TaskCreate, db: Session = Depends(get_db)):
         titulo=task.titulo,
         descricao=task.descricao,
         prioridade=task.prioridade.value,
-        concluida=task.concluida,
         data_limite=task.data_limite,
         frequencia_lembrete=(
             task.frequencia_lembrete.value
